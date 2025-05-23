@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Events</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="events.html">Events</a>
+    <a href="contact.html">Contact</a>
+    <a href="help.html" target="_blank">Help</a>
+  </nav>
+  <br>
+
+  <!-- Main -->
+  <main>
+    <div id="welcomeBanner">
+      Welcome, <span class="highlight">user</span>! 
+      <span style="color:red;font-weight:bold">Early bird offers available!</span>
+    </div><br>
+
+    <!-- Event Image Gallery -->
+    <section id="gallery">
+      <h2>Past Community Events</h2>
+      <table>
+        <caption><b>Community Event Memories</b></caption>
+        <tr>
+          <td><img src="https://www.oyorooms.com/blog/wp-content/uploads/2018/02/event.jpg" width="300" height="250" class="event-img" alt="Event 1" title="Event 1" ondblclick="enlargeImage(this)" /></td>
+          <td><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width="300" height="250" class="event-img" alt="Event 2" title="Event 2" ondblclick="enlargeImage(this)" /></td>
+          <td><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyvetnLOz5AF4JPJGxqw0EJpwpBHl9swwqww&s" width="250" height="250" class="event-img" alt="Event 3" title="Event 3" ondblclick="enlargeImage(this)" /></td>
+          <td><img src="https://thumbs.dreamstime.com/b/crowd-people-dancing-night-club-live-concert-festival-event-young-hands-up-multicolored-confetti-nightclub-party-86892648.jpg" alt="Event4" width="250" height="250"></td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- Registration Form -->
+    <section id="events">
+      <h2>Event Registration</h2>
+      <form id="eventForm" onsubmit="handleRegistration(event)">
+        <label>Name: <input type="text" name="name" required placeholder="Your Name" autofocus /></label><br><br>
+        <label>Email: <input type="email" name="email" required placeholder="your@email.com" /></label><br><br>
+        <label>Date: <input type="date" name="date" required /></label><br><br>
+        <label>Event Type:
+          <select id="eventType" name="eventType" onchange="showFee(event)" required>
+            <option value="">Select</option>
+            <option value="Workshop">Workshop</option>
+            <option value="Seminar">Seminar</option>
+            <option value="Concert">Concert</option>
+          </select>
+        </label><br><br>
+        <label>Message: <textarea name="message"></textarea></label><br>
+        <label>Phone: <input type="text" id="phone" name="phone" onblur="validatePhone(event)" required /></label><br><br>
+        <button type="submit">Register</button>
+        <output id="formOutput"></output>
+      </form>
+    </section><br>
+
+    <!-- Video -->
+    <section>
+      <h2>Promo Video</h2>
+      <video controls oncanplay="videoReady()">
+        <source src="https://v.ftcdn.net/09/05/14/74/700_F_905147493_85vJy2475YVUSE2raQU3Az4s4qb7Xi2V_ST.mp4" type="video/mp4" />
+        Your browser does not support video.
+      </video>
+      <p id="videoMsg"></p>
+    </section>
+
+    <!-- Geolocation -->
+    <section><br>
+      <button onclick="findLocation()">Find Nearby Events</button><br><br>
+      <p id="geoOutput"></p>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Community Portal</p>
+  </footer>
+
+  <script>
+    function enlargeImage(imgElement) {
+      if (imgElement.style.transform === "scale(1.5)") {
+        imgElement.style.transform = "scale(1)";
+      } else {
+        imgElement.style.transform = "scale(1.5)";
+      }
+      imgElement.style.transition = "transform 0.3s ease";
+    }
+
+    function validatePhone(event) {
+      const phone = event.target.value.trim();
+      const phonePattern = /^\d{10}$/;
+      if (!phonePattern.test(phone)) {
+        alert("Enter a valid 10-digit phone number.");
+        event.target.focus();
+      }
+    }
+
+    function showFee(event) {
+      const feeOutput = document.getElementById("formOutput");
+      const type = event.target.value;
+      let fee = "";
+      switch (type) {
+        case "Workshop": fee = "$30"; break;
+        case "Seminar": fee = "$20"; break;
+        case "Concert": fee = "$50"; break;
+      }
+      feeOutput.innerText = fee ? `Fee: ${fee}` : "";
+    }
+
+    function handleRegistration(event) {
+      event.preventDefault();
+
+      const form = document.getElementById("eventForm");
+      const name = form.elements["name"].value.trim();
+      const email = form.elements["email"].value.trim();
+      const date = form.elements["date"].value;
+      const eventType = form.elements["eventType"].value;
+      const phone = form.elements["phone"].value.trim();
+
+      const phonePattern = /^\d{10}$/;
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!name || !email || !date || !eventType || !phone) {
+        alert("Please fill in all the required fields.");
+        return;
+      }
+
+      if (!emailPattern.test(email)) {
+        alert("Enter a valid email address.");
+        return;
+      }
+
+      if (!phonePattern.test(phone)) {
+        alert("Phone number must be exactly 10 digits.");
+        return;
+      }
+
+      alert("Registration successful. Thank you!");
+      form.reset();
+      document.getElementById("formOutput").innerText = "";
+    }
+
+    function videoReady() {
+      document.getElementById("videoMsg").innerText = "Video is ready to play!";
+    }
+
+    function findLocation() {
+  const output = document.getElementById("geoOutput");
+
+  if (!navigator.geolocation) {
+    output.innerText = "Geolocation is not supported.";
+    return;
+  }
+
+  output.innerText = "Locating...";
+
+  // Print a message before calling getCurrentPosition
+  console.log("Calling getCurrentPosition..."); 
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude } = position.coords;
+
+      // Print the latitude and longitude
+      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+
+      output.innerText = `Your Location: Latitude ${latitude}, Longitude ${longitude} Events Adjusted to your location `;
+
+    },
+    (error) => {
+      // Print an error message
+      console.error("Error retrieving location:", error);
+      output.innerText = "Unable to retrieve location.";
+    }
+  );
+}
+  </script>
+</body>
+</html>
